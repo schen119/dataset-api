@@ -3,6 +3,15 @@
     Author: wangpeng54@baidu.com
     Date: 2018/6/10
 """
+# elvis edit
+import re
+import os
+import sys
+dir_path = os.path.dirname(os.path.realpath(__file__))
+idx = [m.start() for m in re.finditer('/', dir_path)]
+sys.path.append(dir_path[0:idx[-1]])
+
+
 
 import argparse
 import cv2
@@ -14,8 +23,9 @@ import pickle as pkl
 import utils.data as data
 import utils.utils as uts
 import utils.eval_utils as eval_uts
-import renderer.render_egl as render
+#import renderer.render_egl as render
 import logging
+
 
 from collections import OrderedDict
 
@@ -56,8 +66,16 @@ class CarPoseVisualizer(object):
         for model in car_models.models:
             car_model = '%s/%s.pkl' % (self._data_config['car_model_dir'],
                                        model.name)
-            with open(car_model) as f:
-                self.car_models[model.name] = pkl.load(f)
+            if not os.path.isfile(car_model):
+                logging.info("can't find the model = {}".format(car_model))
+                continue
+            #with open(car_model) as f:
+            with open(car_model, 'rb') as f:
+                #self.car_models[model.name] = pkl.load(f)
+                self.car_models[model.name] = pkl.load(f, encoding='latin1')
+                #print("car model format = ", type(self.car_models[model.name]))#dict
+                #print("car model vertices' shape=", self.car_models[model.name]['vertices'].shape)#(N*3)
+                #print("car model faces' shape=", self.car_models[model.name]['faces'].shape)  # (M*3) : M>N mark point index
                 # fix the inconsistency between obj and pkl
                 self.car_models[model.name]['vertices'][:, [0, 1]] *= -1
 

@@ -5,6 +5,7 @@
 """
 
 import cv2
+import os
 import numpy as np
 import utils as uts
 
@@ -156,10 +157,10 @@ class ApolloScape(object):
 
         self._data_config['image_dir'] = ROOT + '%s/images/' % split
         self._data_config['pose_dir'] = ROOT + '%s/car_poses/' % split
-        self._data_config['train_list'] = ROOT + '%s/split/train.txt'
-        self._data_config['val_list'] = ROOT + '%s/split/val.txt'
+        self._data_config['train_list'] = ROOT + '%s/split/train.txt' % split
+        self._data_config['val_list'] = ROOT + '%s/split/val.txt' % split
 
-        self._data_config['car_model_dir'] = ROOT + 'car_models/'
+        self._data_config['car_model_dir'] = os.path.join(ROOT, 'car_models')
 
         return self._data_config
 
