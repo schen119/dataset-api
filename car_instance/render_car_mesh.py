@@ -97,7 +97,7 @@ class CarPoseVisualizer(object):
 
         mask = np.zeros(image.shape)
         for face in car['faces'] - 1:
-            pts = np.array([[imgpts[idx, 0, 0], imgpts[idx, 0, 1]] for idx in face], np.int32)
+            pts = np.array([[imgpts[idx, 0, 0]*mask.shape[1], imgpts[idx, 0, 1]*mask.shape[0]] for idx in face], np.int32)
             pts = pts.reshape((-1, 1, 2))
             cv2.polylines(mask, [pts], True, (0, 255, 0))
 
