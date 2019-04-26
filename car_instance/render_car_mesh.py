@@ -88,9 +88,10 @@ class CarPoseVisualizer(object):
     def render_car_cv2(self, pose, car_name, image):
         """Render a car instance given pose and car_name
         """
-        car = self.car_models[car_name]
-        pose = np.array(pose)
+        car = self.car_models[car_name] #composed by many vertices and face meshes
+        pose = np.array(pose) #rotation and tranlation vector with shape (6)
         # project 3D points to 2d image plane
+        # euler angles: successively rotate on Z-Y-X
         rmat = uts.euler_angles_to_rotation_matrix(pose[:3])
         rvect, _ = cv2.Rodrigues(rmat)
         imgpts, jac = cv2.projectPoints(np.float32(car['vertices']), rvect, pose[3:], self.intrinsic, distCoeffs=None)
@@ -408,6 +409,7 @@ class CarPoseVisualizer(object):
         """Show the annotation of a pose file in an image
         Input:
             image_name: the name of image
+            car_pose_file:  include rotation/translation vector (r_x, r_y, r_z, t_x, t_y, t_z) for each car
         Output:
             depth: a rendered depth map of each car
             masks: an instance mask of the label
@@ -421,6 +423,8 @@ class CarPoseVisualizer(object):
         #intrinsic = self.dataset.get_intrinsic(image_name)
         ### we use only camera5 intrinsics
         intrinsic = self.dataset.get_intrinsic("Camera_5")
+        # intrinsic is ndarray [fx,fy, cx, cy]
+        # below convert to 3-by-3 cameraMatrix
         self.intrinsic = uts.intrinsic_vec_to_mat(intrinsic)
         merged_image = image.copy()
         mask_all = np.zeros(image.shape)
